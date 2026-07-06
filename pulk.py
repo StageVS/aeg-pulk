@@ -266,7 +266,7 @@ LANGUAGES = {
         "upload_log": "Загрузите исходный файл Excel с логами",
         "btn_process_log": "Обработать файл и создать отчёт",
         "msg_process_success": "Отчёт успешно сгенерирован!",
-        "btn_download_report": "⬇️ Скачать готовый отчёт raport.xlsx",
+        "btn_download_report": "⬇️ Скачать готовый отчёт",
         "err_upload_file": "Пожалуйста, сначала загрузите Excel-файл!",
         
         # Панель KPI
@@ -349,7 +349,7 @@ LANGUAGES = {
         "upload_log": "Laadige üles algne Exceli fail logidega",
         "btn_process_log": "Töötle faili ja loo aruanne",
         "msg_process_success": "Aruanne on edukalt loodud!",
-        "btn_download_report": "⬇️ Laadi alla valmis aruanne raport.xlsx",
+        "btn_download_report": "⬇️ Laadi alla valmis aruanne",
         "err_upload_file": "Palun laadige esmalt üles Exceli fail!",
         
         # KPI paneel
@@ -431,7 +431,7 @@ LANGUAGES = {
         "upload_log": "Upload the source Excel file with logs",
         "btn_process_log": "Process file and generate report",
         "msg_process_success": "Report generated successfully!",
-        "btn_download_report": "⬇️ Download ready report raport.xlsx",
+        "btn_download_report": "⬇️ Download ready report",
         "err_upload_file": "Please upload an Excel file first!",
         
         # KPI Panel
@@ -1291,6 +1291,14 @@ with tab_time_calc:
         with st.sidebar:
             # Фильтры
             show_all = st.checkbox(t["hide_zero_days"], value=False, key="show_all_checkbox")
+            
+            # Поиск по ключевым словам
+            search_query = st.text_input(
+                "Search",
+                placeholder="🔎 Поиск..." if lang == "RU" else ("🔎 Otsi..." if lang == "EE" else "🔎 Search..."),
+                label_visibility="collapsed",
+                key="search_query_input_main"
+            )
 
     if "processed_df" in st.session_state and uploaded_file is not None:
         
@@ -1302,25 +1310,16 @@ with tab_time_calc:
                 (display_df["Aeg tehases"] != "00:00")
             ]
             
-        st.subheader(t["results_title"])
-
-        # Поиск по ключевым словам и Кнопка скачать в ряд
-        col_search, col_download = st.columns([3, 1])
-        
-        with col_search:
-            search_query = st.text_input(
-                "Search",
-                placeholder="🔎 Поиск..." if lang == "RU" else ("🔎 Otsi..." if lang == "EE" else "🔎 Search..."),
-                label_visibility="collapsed",
-                key="search_query_input_main"
-            )
-
         if search_query:
             # Фильтрация по ключевым словам по всем колонкам (без учета регистра)
             keywords = search_query.lower().split()
             mask = display_df.apply(lambda row: all(any(kw in str(val).lower() for val in row) for kw in keywords), axis=1)
             display_df = display_df[mask]
 
+        # Заголовок результатов и кнопка скачивания в ряд
+        col_title, col_download = st.columns([3, 1])
+        with col_title:
+            st.subheader(t["results_title"])
         with col_download:
             try:
                 excel_data = get_excel_download_bytes(display_df)
