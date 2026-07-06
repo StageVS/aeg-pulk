@@ -990,10 +990,11 @@ div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] labe
     background-color: rgba(0, 212, 204, 0.1) !important;
 }
 
-/* Настройка подсветки поиска в таблице: делаем совпадения полупрозрачным белым цветом */
-:root, .glideDataGrid, [role="grid"], [data-testid="stDataFrame"] {
-    --gdg-bg-search-result: rgba(255, 255, 255, 0.65) !important;
-    --gdg-bg-search-result-active: rgba(255, 255, 255, 0.9) !important;
+/* Настройка подсветки поиска в таблице: делаем совпадения полупрозрачным светло-белым цветом на всех уровнях */
+*, *::before, *::after {
+    --gdg-bg-search-result: rgba(255, 255, 255, 0.75) !important;
+    --gdg-bg-search-result-active: rgba(255, 255, 255, 0.95) !important;
+    --gdg-bg-search-result-current: rgba(255, 255, 255, 0.95) !important;
 }
 </style>
 """, unsafe_allow_html=True)
