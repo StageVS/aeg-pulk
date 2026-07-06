@@ -1271,7 +1271,8 @@ with tab_time_calc:
             if pasted_text and pasted_text.strip():
                 if st.button("🗑️ Очистить текст" if lang == "RU" else ("🗑️ Puhasta tekst" if lang == "EE" else "🗑️ Clear Text"), use_container_width=True):
                     st.session_state["log_text_area_val"] = ""
-                    st.session_state["log_text_area"] = ""
+                    if "log_text_area" in st.session_state:
+                        del st.session_state["log_text_area"]
                     st.rerun()
             
     df = None
@@ -1294,7 +1295,7 @@ with tab_time_calc:
         has_data = True
 
     if has_data:
-        if "processed_df" not in st.session_state:
+        if True:
             with st.sidebar:
                 # Динамическое название кнопки
                 if input_method == t["input_text_tab"]:
