@@ -271,6 +271,7 @@ LANGUAGES = {
         "input_file_tab": "📁 Файл Excel",
         "input_text_tab": "📝 Текст",
         "placeholder_paste_text": "Вставьте сюда скопированные из Excel/таблицы логи (например: Имя, Дата, Время)...",
+        "btn_clear_data": "🗑️ Очистить данные",
         
         # Панель KPI
         "kpi_total_orders": "Всего заказов",
@@ -357,6 +358,7 @@ LANGUAGES = {
         "input_file_tab": "📁 Exceli fail",
         "input_text_tab": "📝 Tekst",
         "placeholder_paste_text": "Asetage siia Excelist/tabelist kopeeritud logid (näiteks: Nimi, Kuupäev, Aeg)...",
+        "btn_clear_data": "🗑️ Puhasta andmed",
         
         # KPI paneel
         "kpi_total_orders": "Tellimusi kokku",
@@ -442,6 +444,7 @@ LANGUAGES = {
         "input_file_tab": "📁 Excel File",
         "input_text_tab": "📝 Text",
         "placeholder_paste_text": "Paste logs copied from Excel/table here (e.g. Name, Date, Time)...",
+        "btn_clear_data": "🗑️ Clear Data",
         
         # KPI Panel
         "kpi_total_orders": "Total Orders",
@@ -1450,6 +1453,18 @@ with tab_time_calc:
                 label_visibility="collapsed",
                 key="search_query_input_main"
             )
+            
+            st.markdown("---")
+            if st.button(t["btn_clear_data"], use_container_width=True):
+                if "processed_df" in st.session_state:
+                    del st.session_state["processed_df"]
+                if "last_file_key" in st.session_state:
+                    del st.session_state["last_file_key"]
+                if "log_file_uploader" in st.session_state:
+                    del st.session_state["log_file_uploader"]
+                if "log_text_area" in st.session_state:
+                    del st.session_state["log_text_area"]
+                st.rerun()
 
     if "processed_df" in st.session_state and has_data:
         
