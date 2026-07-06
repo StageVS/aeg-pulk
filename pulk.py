@@ -1126,7 +1126,7 @@ with tab_time_calc:
     st.header(t["time_calc_header"])
     
     with st.sidebar:
-        uploaded_file = st.file_uploader(t["upload_log"], type=["xlsx", "xls"], label_visibility="collapsed")
+        uploaded_file = st.file_uploader("Upload Log File", type=["xlsx", "xls"], label_visibility="collapsed", key="log_file_uploader")
         
     if uploaded_file is not None:
         file_key = f"file_{uploaded_file.name}_{uploaded_file.size}"
@@ -1289,7 +1289,7 @@ with tab_time_calc:
     if "processed_df" in st.session_state:
         with st.sidebar:
             # Фильтры
-            show_all = st.checkbox(t["hide_zero_days"], value=False)
+            show_all = st.checkbox(t["hide_zero_days"], value=False, key="show_all_checkbox")
 
     if "processed_df" in st.session_state and uploaded_file is not None:
         
