@@ -1289,58 +1289,65 @@ with tab_time_calc:
         has_data = True
 
     if has_data:
-        # Читаем Excel или парсим скопированный текст
-        try:
-            if uploaded_file is not None:
-                df = pd.read_excel(uploaded_file, header=None, engine='openpyxl')
-            else:
-                df = parse_pasted_text(pasted_text)
-                if df is None:
-                    st.sidebar.error("Не удалось распознать формат скопированного текста. Убедитесь, что колонки разделены табуляцией или точкой с запятой.")
-            
-            if df is not None:
-                mapping = find_column_mapping(df)
-                if mapping:
-                    name_c = mapping["name_col"]
-                    date_c = mapping["date_col"]
-                    used_cols = {name_c, date_c}
-                    
-                    in_c = mapping["in_col"]
-                    out_c = mapping["out_col"]
-                    total_c = mapping["total_col"]
-                    
-                    # Фолбек
-                    free_cols = [c for c in range(df.shape[1]) if c not in used_cols]
-                    tabel_c = name_c + 1 if name_c + 1 != date_c else None
-                    if tabel_c in free_cols:
-                        free_cols.remove(tabel_c)
-                    free_cols = [c for c in free_cols if c > min(name_c, date_c)]
-                    
-                    if in_c is None:
-                        in_c = free_cols.pop(0) if free_cols else None
-                    if out_c is None:
-                        out_c = free_cols.pop(0) if free_cols else None
-                    if total_c is None:
-                        total_c = free_cols.pop(0) if free_cols else None
-                        
-                    start_row = mapping["header_row_idx"] + 1
-                else:
-                    start_row = 0
-                    name_c = 0
-                    date_c = 1
-                    in_c = 2
-                    out_c = 3
-                    total_c = 4
-        except Exception as e:
-            st.sidebar.error(f"Не удалось прочитать файл: {e}")
-            st.stop()
-
         if "processed_df" not in st.session_state:
             with st.sidebar:
-                if st.button(t["btn_process_log"], type="primary"):
+                # Динамическое название кнопки
+                if input_method == t["input_text_tab"]:
+                    btn_label = "Загрузить" if lang == "RU" else ("Laadi" if lang == "EE" else "Load")
+                else:
+                    btn_label = t["btn_process_log"]
+                    
+                if st.button(btn_label, type="primary"):
                     try:
+                        # 1. Читаем/парсим данные в зависимости от метода ввода
+                        if uploaded_file is not None:
+                            df = pd.read_excel(uploaded_file, header=None, engine='openpyxl')
+                        else:
+                            df = parse_pasted_text(pasted_text)
+                            if df is None:
+                                st.sidebar.error("Не удалось распознать формат скопированного текста. Убедитесь, что колонки разделены табуляцией или точкой с запятой.")
+                                st.stop()
+                                
+                        if df is None:
+                            st.sidebar.error("Данные отсутствуют!")
+                            st.stop()
+                            
+                        # 2. Определяем маппинг колонок
+                        mapping = find_column_mapping(df)
+                        if mapping:
+                            name_c = mapping["name_col"]
+                            date_c = mapping["date_col"]
+                            used_cols = {name_c, date_c}
+                            
+                            in_c = mapping["in_col"]
+                            out_c = mapping["out_col"]
+                            total_c = mapping["total_col"]
+                            
+                            # Фолбек
+                            free_cols = [c for c in range(df.shape[1]) if c not in used_cols]
+                            tabel_c = name_c + 1 if name_c + 1 != date_c else None
+                            if tabel_c in free_cols:
+                                free_cols.remove(tabel_c)
+                            free_cols = [c for c in free_cols if c > min(name_c, date_c)]
+                            
+                            if in_c is None:
+                                in_c = free_cols.pop(0) if free_cols else None
+                            if out_c is None:
+                                out_c = free_cols.pop(0) if free_cols else None
+                            if total_c is None:
+                                total_c = free_cols.pop(0) if free_cols else None
+                                
+                            start_row = mapping["header_row_idx"] + 1
+                        else:
+                            start_row = 0
+                            name_c = 0
+                            date_c = 1
+                            in_c = 2
+                            out_c = 3
+                            total_c = 4
+                            
+                        # 3. Обрабатываем строки
                         extracted_rows = []
-                        
                         for idx, row in df.iloc[start_row:].iterrows():
                             if pd.isna(row.iloc[name_c]) and pd.isna(row.iloc[date_c]):
                                 continue
@@ -1449,7 +1456,7 @@ with tab_time_calc:
                                 del st.session_state["log_text_area"]
                             st.rerun()
                     except Exception as e:
-                        st.sidebar.error(f"Произошла ошибка при обработке файла: {e}")
+                        st.sidebar.error(f"Произошла ошибка при обработке данных: {e}")
 
     if "processed_df" in st.session_state:
         with st.sidebar:
