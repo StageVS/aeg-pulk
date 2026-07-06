@@ -1338,6 +1338,16 @@ with tab_time_calc:
 
                 except:
                     pass
+
+            # Подсветка совпадений поиска в ячейках светло-белым цветом
+            if search_query:
+                keywords = search_query.lower().split()
+                for i in df.index:
+                    for col in df.columns:
+                        val_str = str(df.at[i, col]).lower()
+                        if any(kw in val_str for kw in keywords):
+                            styles.at[i, col] = 'background-color: rgba(255, 255, 255, 0.25); color: #ffffff; font-weight: 700;'
+
             return styles
 
         styled_df = display_df.style.apply(highlight_weekends, axis=None).set_properties(**{
