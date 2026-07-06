@@ -920,6 +920,17 @@ div[data-testid="stDataFrame"] [role="grid"],
 div[data-testid="stDataFrame"] .glideDataGrid {
     overflow: visible !important;
 }
+
+/* Делаем верхнюю панель прозрачной и убираем верхнюю цветную полосу */
+header[data-testid="stHeader"] {
+    background-color: transparent !important;
+    background: transparent !important;
+    border: none !important;
+}
+header[data-testid="stHeader"]::before {
+    background-image: none !important;
+    display: none !important;
+}
 </style>
 """, unsafe_allow_html=True)
 # ======================================================================
