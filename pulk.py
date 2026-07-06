@@ -996,17 +996,18 @@ div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] labe
 
 # --- БОКОВАЯ ПАНЕЛЬ И ВЫБОР ЯЗЫКА ---
 with st.sidebar:
+    def change_lang():
+        st.session_state["app_lang"] = st.session_state["lang_selector"]
+
     selected_lang = st.radio(
         "Language / Keel / Язык", 
         ["RU", "EE", "EN"], 
         index=["RU", "EE", "EN"].index(st.session_state["app_lang"]), 
         key="lang_selector",
         horizontal=True,
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        on_change=change_lang
     )
-    if selected_lang != st.session_state["app_lang"]:
-        st.session_state["app_lang"] = selected_lang
-        st.rerun()
     st.markdown("---")
 
 # --- ШАПКА ГЛАВНОЙ СТРАНИЦЫ (УБРАНА ПО ЗАПРОСУ) ---
