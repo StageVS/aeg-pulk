@@ -1308,7 +1308,7 @@ with tab_time_calc:
         # Подсветка строк: выходные — бирюзовым, рабочий день с нулями — красным
         # + красная рамка в ячейке Aeg väljas если > 1 часа
         def highlight_weekends(df):
-            styles = pd.DataFrame('background-color: #000000; color: #ffffff;', index=df.index, columns=df.columns)
+            styles = pd.DataFrame('background-color: #181818; color: #ffffff;', index=df.index, columns=df.columns)
             for i in df.index:
                 try:
                     date_val = pd.to_datetime(df.at[i, "Kuupäev"], format='%d.%m.%Y')
@@ -1324,7 +1324,7 @@ with tab_time_calc:
                         styles.loc[i] = 'background-color: #004e64; color: #ffffff; font-weight: 600;'
                     elif not is_weekend and is_zero:
                         for col in ["Aeg kokku tehases", "Aeg tehases", "Aeg väljas"]:
-                            styles.at[i, col] = 'background-color: #000000; color: #ff6b6b; font-weight: 600;'
+                            styles.at[i, col] = 'background-color: #181818; color: #ff6b6b; font-weight: 600;'
 
                     try:
                         väljas_str = df.at[i, "Aeg väljas"]
