@@ -989,6 +989,12 @@ div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] labe
     color: #00F0FF !important;
     background-color: rgba(0, 212, 204, 0.1) !important;
 }
+
+/* Настройка подсветки поиска в таблице: делаем совпадения светло-белыми вместо красных/розовых */
+:root, .glideDataGrid, [role="grid"], [data-testid="stDataFrame"] {
+    --gdg-bg-search-result: rgba(255, 255, 255, 0.25) !important;
+    --gdg-bg-search-result-active: rgba(255, 255, 255, 0.45) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 # ======================================================================
@@ -1095,27 +1101,7 @@ def get_merged_data():
 
 init_db()
 
-# Helper to generate formatted excel download
-def get_excel_download_bytes(df_to_export):
-    from openpyxl import Workbook
-    import io
-    wb = Workbook()
-    ws = wb.active
-    
-    # Write column names
-    ws.append(list(df_to_export.columns))
-    
-    # Write rows
-    for r in df_to_export.values.tolist():
-        ws.append(r)
-        
-    # Apply premium styling
-    format_excel_sheet_in_memory(wb)
-    
-    # Save to bytes
-    buffer = io.BytesIO()
-    wb.save(buffer)
-    return buffer.getvalue()
+
 
 # --- ИНТЕРФЕЙС РАСЧЕТА ВРЕМЕНИ ---
 tab_time_calc = st.container()
@@ -1316,22 +1302,7 @@ with tab_time_calc:
             mask = display_df.apply(lambda row: all(any(kw in str(val).lower() for val in row) for kw in keywords), axis=1)
             display_df = display_df[mask]
 
-        # Заголовок результатов и кнопка скачивания в ряд
-        col_title, col_download = st.columns([3, 1])
-        with col_title:
-            st.subheader(t["results_title"])
-        with col_download:
-            try:
-                excel_data = get_excel_download_bytes(display_df)
-                st.download_button(
-                    label=t["btn_download_report"],
-                    data=excel_data,
-                    file_name="raport.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
-            except Exception as e:
-                st.error(f"Ошибка Excel: {e}")
+        st.subheader(t["results_title"])
 
         # Подсветка строк: выходные — бирюзовым, рабочий день с нулями — красным
         # + красная рамка в ячейке Aeg väljas если > 1 часа
