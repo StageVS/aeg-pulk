@@ -990,11 +990,11 @@ div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] labe
     background-color: rgba(0, 212, 204, 0.1) !important;
 }
 
-/* Настройка подсветки поиска в таблице: делаем совпадения полупрозрачным светло-белым цветом на всех уровнях */
-*, *::before, *::after {
-    --gdg-bg-search-result: rgba(255, 255, 255, 0.75) !important;
-    --gdg-bg-search-result-active: rgba(255, 255, 255, 0.95) !important;
-    --gdg-bg-search-result-current: rgba(255, 255, 255, 0.95) !important;
+/* Настройка подсветки поиска в таблице: делаем совпадения светящимися бирюзовыми/белыми */
+*, *::before, *::after, :root, body, canvas, .glideDataGrid, [role="grid"], [data-testid="stDataFrame"] {
+    --gdg-bg-search-result: #00f0ff66 !important;
+    --gdg-bg-search-result-active: #ffffffcc !important;
+    --gdg-bg-search-result-current: #ffffffcc !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -1339,14 +1339,7 @@ with tab_time_calc:
                 except:
                     pass
 
-            # Подсветка совпадений поиска в ячейках светло-белым цветом
-            if search_query:
-                keywords = search_query.lower().split()
-                for i in df.index:
-                    for col in df.columns:
-                        val_str = str(df.at[i, col]).lower()
-                        if any(kw in val_str for kw in keywords):
-                            styles.at[i, col] = 'background-color: rgba(255, 255, 255, 0.25); color: #ffffff; font-weight: 700;'
+
 
             return styles
 
