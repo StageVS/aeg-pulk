@@ -1437,6 +1437,11 @@ with tab_time_calc:
                             
                             # Сохраняем в сессию
                             st.session_state["processed_df"] = result_df
+                            # Очищаем вводные виджеты, чтобы сайдбар стал чистым после добавления
+                            if "log_file_uploader" in st.session_state:
+                                del st.session_state["log_file_uploader"]
+                            if "log_text_area" in st.session_state:
+                                del st.session_state["log_text_area"]
                             st.rerun()
                     except Exception as e:
                         st.sidebar.error(f"Произошла ошибка при обработке файла: {e}")
@@ -1466,7 +1471,7 @@ with tab_time_calc:
                     del st.session_state["log_text_area"]
                 st.rerun()
 
-    if "processed_df" in st.session_state and has_data:
+    if "processed_df" in st.session_state:
         
         display_df = st.session_state["processed_df"]
         if not show_all:
