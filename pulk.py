@@ -1118,38 +1118,114 @@ def parse_pasted_text(text_data):
     if not text_data.strip():
         return None
     import io
+    import re
     
-    # Try reading as tab-separated values (tsv) first (copy paste from Excel)
+    # 1. Сначала пробуем стандартное чтение таблицы (TSV/CSV)
     try:
         df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
         if df.shape[1] >= 2:
-            return df
+            # Проверяем, есть ли хотя бы в одном столбце даты в формате DD.MM.YYYY
+            has_date = False
+            for col in df.columns:
+                if df[col].astype(str).str.contains(r'\d{2}\.\d{2}\.\d{4}').any():
+                    has_date = True
+                    break
+            if has_date:
+                return df
     except:
         pass
-        
-    # Try auto-detect separator
-    try:
-        df = pd.read_csv(io.StringIO(text_data), sep=None, header=None, engine='python')
-        if df.shape[1] >= 2:
-            return df
-    except:
-        pass
-        
-    # Try comma-separated
-    try:
-        df = pd.read_csv(io.StringIO(text_data), sep=',', header=None)
-        if df.shape[1] >= 2:
-            return df
-    except:
-        pass
-        
-    # Try semicolon-separated
-    try:
-        df = pd.read_csv(io.StringIO(text_data), sep=';', header=None)
-        if df.shape[1] >= 2:
-            return df
-    except:
-        pass
+
+    # 2. Если табличный парсинг не дал дат, делаем интеллектуальный построчный разбор
+    lines = [line.strip() for line in text_data.split('\n') if line.strip()]
+    records = []
+    
+    # Регулярное выражение для поиска дат DD.MM.YYYY
+    date_regex = re.compile(r'\b(\d{2}\.\d{2}\.\d{4})\b')
+    
+    for idx, line in enumerate(lines):
+        match = date_regex.search(line)
+        if match:
+            # Найдена строка с датой
+            date_str = match.group(1)
+            
+            # Ищем имя сотрудника: первая строка выше даты, содержащая буквы
+            name_str = None
+            for prev_idx in range(idx - 1, -1, -1):
+                prev_line = lines[prev_idx]
+                if date_regex.search(prev_line):
+                    break # дошли до другой даты
+                if re.search(r'[A-Za-zА-Яа-яЁё]', prev_line):
+                    name_str = prev_line
+                    break
+            
+            # Если выше не нашли, ищем ниже (на всякий случай)
+            if not name_str:
+                for next_idx in range(idx + 1, len(lines)):
+                    next_line = lines[next_idx]
+                    if date_regex.search(next_line):
+                        break
+                    if re.search(r'[A-Za-zА-Яа-яЁё]', next_line):
+                        name_str = next_line
+                        break
+            
+            if not name_str:
+                name_str = "Unknown"
+                
+            # Собираем все часы (числа < 24, исключая номер карты badge типа 8087)
+            numbers = []
+            
+            def get_numbers_from_str(s):
+                s_clean = s.replace(',', '.')
+                return [float(x) for x in re.findall(r'\b\d+(?:\.\d+)?\b', s_clean)]
+            
+            # Числа на строке с датой (без самой даты)
+            line_no_date = line.replace(date_str, '')
+            for num in get_numbers_from_str(line_no_date):
+                if num < 24: # Время работы не может быть больше 24 часов
+                    numbers.append(num)
+                    
+            # Проверяем соседние строки на наличие цифр (без букв)
+            for adj_idx in [idx - 1, idx + 1]:
+                if 0 <= adj_idx < len(lines):
+                    adj_line = lines[adj_idx]
+                    if not re.search(r'[A-Za-zА-Яа-яЁё]', adj_line):
+                        for num in get_numbers_from_str(adj_line):
+                            if num < 24:
+                                numbers.append(num)
+                                
+            # Переводим числовые часы в формат HH:MM
+            def float_to_time_str(val):
+                h = int(val)
+                m = int(round((val - h) * 60))
+                if m == 60:
+                    h += 1
+                    m = 0
+                return f"{h:02d}:{m:02d}"
+                
+            in_val = "00:00"
+            out_val = "00:00"
+            total_val = "00:00"
+            
+            if len(numbers) >= 3:
+                in_val = float_to_time_str(numbers[0])
+                out_val = float_to_time_str(numbers[1])
+                total_val = float_to_time_str(numbers[2])
+            elif len(numbers) == 2:
+                in_val = float_to_time_str(numbers[0])
+                total_val = float_to_time_str(numbers[1])
+            elif len(numbers) == 1:
+                in_val = float_to_time_str(numbers[0])
+                
+            records.append({
+                "Nimi": name_str,
+                "Kuupäev": date_str,
+                "Aeg tehases": in_val,
+                "Aeg väljas": out_val,
+                "Aeg kokku tehases": total_val
+            })
+            
+    if records:
+        return pd.DataFrame(records)
         
     return None
 
@@ -1219,34 +1295,34 @@ with tab_time_calc:
                 if mapping:
                     name_c = mapping["name_col"]
                     date_c = mapping["date_col"]
-                used_cols = {name_c, date_c}
-                
-                in_c = mapping["in_col"]
-                out_c = mapping["out_col"]
-                total_c = mapping["total_col"]
-                
-                # Фолбек
-                free_cols = [c for c in range(df.shape[1]) if c not in used_cols]
-                tabel_c = name_c + 1 if name_c + 1 != date_c else None
-                if tabel_c in free_cols:
-                    free_cols.remove(tabel_c)
-                free_cols = [c for c in free_cols if c > min(name_c, date_c)]
-                
-                if in_c is None:
-                    in_c = free_cols.pop(0) if free_cols else None
-                if out_c is None:
-                    out_c = free_cols.pop(0) if free_cols else None
-                if total_c is None:
-                    total_c = free_cols.pop(0) if free_cols else None
+                    used_cols = {name_c, date_c}
                     
-                start_row = mapping["header_row_idx"] + 1
-            else:
-                start_row = 0
-                name_c = 0
-                date_c = 1
-                in_c = 2
-                out_c = 3
-                total_c = 4
+                    in_c = mapping["in_col"]
+                    out_c = mapping["out_col"]
+                    total_c = mapping["total_col"]
+                    
+                    # Фолбек
+                    free_cols = [c for c in range(df.shape[1]) if c not in used_cols]
+                    tabel_c = name_c + 1 if name_c + 1 != date_c else None
+                    if tabel_c in free_cols:
+                        free_cols.remove(tabel_c)
+                    free_cols = [c for c in free_cols if c > min(name_c, date_c)]
+                    
+                    if in_c is None:
+                        in_c = free_cols.pop(0) if free_cols else None
+                    if out_c is None:
+                        out_c = free_cols.pop(0) if free_cols else None
+                    if total_c is None:
+                        total_c = free_cols.pop(0) if free_cols else None
+                        
+                    start_row = mapping["header_row_idx"] + 1
+                else:
+                    start_row = 0
+                    name_c = 0
+                    date_c = 1
+                    in_c = 2
+                    out_c = 3
+                    total_c = 4
         except Exception as e:
             st.sidebar.error(f"Не удалось прочитать файл: {e}")
             st.stop()
