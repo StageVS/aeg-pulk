@@ -11,7 +11,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 
 # Настройка страницы
-st.set_page_config(layout="wide", page_title="Tootmise arvestus / Учёт производства / Production Tracking")
+st.set_page_config(layout="wide", page_title="Ajaarvestus / Расчёт времени / Time Tracking")
 
 DB_NAME = "production.db"
 
