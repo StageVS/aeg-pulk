@@ -932,46 +932,62 @@ header[data-testid="stHeader"]::before {
     display: none !important;
 }
 
-/* Делаем выбор языка в боковой панели маленьким, сливающимся с фоном, но проявляющимся при наведении */
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+/* Делаем выбор языка в боковой панели горизонтальным кнопочным сегментом */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] {
     position: absolute !important;
     top: 6px !important;
     left: 12px !important;
-    width: 100px !important;
+    width: 140px !important;
     z-index: 99999 !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"] label p {
+/* Скрываем стандартные круглые радио-точки и заголовок */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [data-testid="stWidgetLabel"] {
+    display: none !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+    background-color: rgba(0, 30, 40, 0.4) !important;
+    border: 1px solid rgba(0, 212, 204, 0.2) !important;
+    border-radius: 6px !important;
+    padding: 2px !important;
+}
+
+/* Стилизуем элементы выбора как кнопки */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label {
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
     font-size: 11px !important;
-    text-transform: lowercase !important;
-    color: rgba(178, 240, 239, 0.2) !important;
-    text-shadow: none !important;
-    transition: color 0.3s ease !important;
-}
-
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    font-weight: 600 !important;
+    color: rgba(178, 240, 239, 0.4) !important;
     background-color: transparent !important;
-    border: 1px solid rgba(178, 240, 239, 0.1) !important;
-    font-size: 12px !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] * {
-    color: rgba(178, 240, 239, 0.2) !important;
-    transition: color 0.3s ease !important;
+/* Убираем отображение самого круглого инпута */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label div:first-child {
+    display: none !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover label p {
-    color: rgba(178, 240, 239, 0.7) !important;
+/* Стиль для выбранного элемента */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {
+    background: linear-gradient(135deg, #00c9c8 0%, #007d9c 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(0, 201, 200, 0.3) !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb="select"] {
-    border-color: rgba(178, 240, 239, 0.4) !important;
-    background-color: rgba(0, 30, 40, 0.3) !important;
-}
-
-div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb="select"] * {
-    color: rgba(178, 240, 239, 0.8) !important;
+/* Эффект наведения на невыбранные кнопки */
+div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label:hover {
+    color: #00F0FF !important;
+    background-color: rgba(0, 212, 204, 0.1) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -980,11 +996,12 @@ div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb=
 
 # --- БОКОВАЯ ПАНЕЛЬ И ВЫБОР ЯЗЫКА ---
 with st.sidebar:
-    selected_lang = st.selectbox(
+    selected_lang = st.radio(
         "Language / Keel / Язык", 
         ["RU", "EE", "EN"], 
         index=["RU", "EE", "EN"].index(st.session_state["app_lang"]), 
         key="lang_selector",
+        horizontal=True,
         label_visibility="collapsed"
     )
     if selected_lang != st.session_state["app_lang"]:
