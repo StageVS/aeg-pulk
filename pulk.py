@@ -933,8 +933,16 @@ header[data-testid="stHeader"]::before {
 }
 
 /* Делаем выбор языка в боковой панели маленьким, сливающимся с фоном, но проявляющимся при наведении */
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+    position: absolute !important;
+    top: 6px !important;
+    left: 12px !important;
+    width: 100px !important;
+    z-index: 99999 !important;
+}
+
 div[data-testid="stSidebar"] div[data-testid="stSelectbox"] label p {
-    font-size: 12px !important;
+    font-size: 11px !important;
     text-transform: lowercase !important;
     color: rgba(178, 240, 239, 0.2) !important;
     text-shadow: none !important;
@@ -972,12 +980,12 @@ div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb=
 
 # --- БОКОВАЯ ПАНЕЛЬ И ВЫБОР ЯЗЫКА ---
 with st.sidebar:
-    st.subheader(t["sidebar_mgmt"])
     selected_lang = st.selectbox(
         "Language / Keel / Язык", 
         ["RU", "EE", "EN"], 
         index=["RU", "EE", "EN"].index(st.session_state["app_lang"]), 
-        key="lang_selector"
+        key="lang_selector",
+        label_visibility="collapsed"
     )
     if selected_lang != st.session_state["app_lang"]:
         st.session_state["app_lang"] = selected_lang
