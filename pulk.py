@@ -931,6 +931,40 @@ header[data-testid="stHeader"]::before {
     background-image: none !important;
     display: none !important;
 }
+
+/* Делаем выбор языка в боковой панели маленьким, сливающимся с фоном, но проявляющимся при наведении */
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"] label p {
+    font-size: 12px !important;
+    text-transform: lowercase !important;
+    color: rgba(178, 240, 239, 0.2) !important;
+    text-shadow: none !important;
+    transition: color 0.3s ease !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] {
+    background-color: transparent !important;
+    border: 1px solid rgba(178, 240, 239, 0.1) !important;
+    font-size: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"] [data-baseweb="select"] * {
+    color: rgba(178, 240, 239, 0.2) !important;
+    transition: color 0.3s ease !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover label p {
+    color: rgba(178, 240, 239, 0.7) !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb="select"] {
+    border-color: rgba(178, 240, 239, 0.4) !important;
+    background-color: rgba(0, 30, 40, 0.3) !important;
+}
+
+div[data-testid="stSidebar"] div[data-testid="stSelectbox"]:hover [data-baseweb="select"] * {
+    color: rgba(178, 240, 239, 0.8) !important;
+}
 </style>
 """, unsafe_allow_html=True)
 # ======================================================================
