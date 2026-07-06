@@ -1263,6 +1263,11 @@ with tab_time_calc:
                 key="log_text_area"
             )
             uploaded_file = None
+            if pasted_text and pasted_text.strip():
+                if st.button("🗑️ Очистить текст" if lang == "RU" else ("🗑️ Puhasta tekst" if lang == "EE" else "🗑️ Clear Text"), use_container_width=True):
+                    if "log_text_area" in st.session_state:
+                        del st.session_state["log_text_area"]
+                    st.rerun()
             
     df = None
     has_data = False
