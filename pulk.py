@@ -264,10 +264,13 @@ LANGUAGES = {
         "tab_time_calc": "⏱️ Расчёт времени",
         "time_calc_header": "⏱️ Отчёта рабочего времени",
         "upload_log": "Загрузите исходный файл Excel с логами",
-        "btn_process_log": "Обработать файл и создать отчёт",
+        "btn_process_log": "Обработать данные и создать отчёт",
         "msg_process_success": "Отчёт успешно сгенерирован!",
         "btn_download_report": "⬇️ Скачать готовый отчёт",
-        "err_upload_file": "Пожалуйста, сначала загрузите Excel-файл!",
+        "err_upload_file": "Пожалуйста, сначала загрузите Excel-файл или вставьте текст!",
+        "input_file_tab": "📁 Файл Excel",
+        "input_text_tab": "📝 Текст",
+        "placeholder_paste_text": "Вставьте сюда скопированные из Excel/таблицы логи (например: Имя, Дата, Время)...",
         
         # Панель KPI
         "kpi_total_orders": "Всего заказов",
@@ -347,10 +350,13 @@ LANGUAGES = {
         "tab_time_calc": "⏱️ Ajaarvestus",
         "time_calc_header": "⏱️ Tööaja aruande generaator läbipääsusüsteemi logidest",
         "upload_log": "Laadige üles algne Exceli fail logidega",
-        "btn_process_log": "Töötle faili ja loo aruanne",
+        "btn_process_log": "Töötle andmeid ja loo aruanne",
         "msg_process_success": "Aruanne on edukalt loodud!",
         "btn_download_report": "⬇️ Laadi alla valmis aruanne",
-        "err_upload_file": "Palun laadige esmalt üles Exceli fail!",
+        "err_upload_file": "Palun laadige esmalt üles Exceli fail või asetage tekst!",
+        "input_file_tab": "📁 Exceli fail",
+        "input_text_tab": "📝 Tekst",
+        "placeholder_paste_text": "Asetage siia Excelist/tabelist kopeeritud logid (näiteks: Nimi, Kuupäev, Aeg)...",
         
         # KPI paneel
         "kpi_total_orders": "Tellimusi kokku",
@@ -429,10 +435,13 @@ LANGUAGES = {
         "tab_time_calc": "⏱️ Time Calculator",
         "time_calc_header": "⏱️ Work Hours Report Generator from Access Logs",
         "upload_log": "Upload the source Excel file with logs",
-        "btn_process_log": "Process file and generate report",
+        "btn_process_log": "Process data and generate report",
         "msg_process_success": "Report generated successfully!",
         "btn_download_report": "⬇️ Download ready report",
-        "err_upload_file": "Please upload an Excel file first!",
+        "err_upload_file": "Please upload an Excel file or paste text first!",
+        "input_file_tab": "📁 Excel File",
+        "input_text_tab": "📝 Text",
+        "placeholder_paste_text": "Paste logs copied from Excel/table here (e.g. Name, Date, Time)...",
         
         # KPI Panel
         "kpi_total_orders": "Total Orders",
@@ -1104,6 +1113,46 @@ init_db()
 
 
 
+# Helper to parse pasted text
+def parse_pasted_text(text_data):
+    if not text_data.strip():
+        return None
+    import io
+    
+    # Try reading as tab-separated values (tsv) first (copy paste from Excel)
+    try:
+        df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
+        if df.shape[1] >= 2:
+            return df
+    except:
+        pass
+        
+    # Try auto-detect separator
+    try:
+        df = pd.read_csv(io.StringIO(text_data), sep=None, header=None, engine='python')
+        if df.shape[1] >= 2:
+            return df
+    except:
+        pass
+        
+    # Try comma-separated
+    try:
+        df = pd.read_csv(io.StringIO(text_data), sep=',', header=None)
+        if df.shape[1] >= 2:
+            return df
+    except:
+        pass
+        
+    # Try semicolon-separated
+    try:
+        df = pd.read_csv(io.StringIO(text_data), sep=';', header=None)
+        if df.shape[1] >= 2:
+            return df
+    except:
+        pass
+        
+    return None
+
 # --- ИНТЕРФЕЙС РАСЧЕТА ВРЕМЕНИ ---
 tab_time_calc = st.container()
 
@@ -1114,23 +1163,62 @@ with tab_time_calc:
     st.header(t["time_calc_header"])
     
     with st.sidebar:
-        uploaded_file = st.file_uploader("Upload Log File", type=["xlsx", "xls"], label_visibility="collapsed", key="log_file_uploader")
+        # Селектор метода ввода
+        input_method = st.radio(
+            "Input Method",
+            [t["input_file_tab"], t["input_text_tab"]],
+            horizontal=True,
+            key="input_method_selector",
+            label_visibility="collapsed"
+        )
         
+        if input_method == t["input_file_tab"]:
+            uploaded_file = st.file_uploader("Upload Log File", type=["xlsx", "xls"], label_visibility="collapsed", key="log_file_uploader")
+            pasted_text = None
+        else:
+            pasted_text = st.text_area(
+                "Paste Text",
+                placeholder=t["placeholder_paste_text"],
+                label_visibility="collapsed",
+                height=250,
+                key="log_text_area"
+            )
+            uploaded_file = None
+            
+    df = None
+    has_data = False
+    
     if uploaded_file is not None:
         file_key = f"file_{uploaded_file.name}_{uploaded_file.size}"
         if "last_file_key" not in st.session_state or st.session_state["last_file_key"] != file_key:
             st.session_state["last_file_key"] = file_key
             if "processed_df" in st.session_state:
                 del st.session_state["processed_df"]
+        has_data = True
+    elif pasted_text and pasted_text.strip():
+        import hashlib
+        file_key = f"text_{hashlib.md5(pasted_text.encode('utf-8')).hexdigest()}"
+        if "last_file_key" not in st.session_state or st.session_state["last_file_key"] != file_key:
+            st.session_state["last_file_key"] = file_key
+            if "processed_df" in st.session_state:
+                del st.session_state["processed_df"]
+        has_data = True
 
-        # Читаем Excel для обработки
+    if has_data:
+        # Читаем Excel или парсим скопированный текст
         try:
-            df = pd.read_excel(uploaded_file, header=None, engine='openpyxl')
+            if uploaded_file is not None:
+                df = pd.read_excel(uploaded_file, header=None, engine='openpyxl')
+            else:
+                df = parse_pasted_text(pasted_text)
+                if df is None:
+                    st.sidebar.error("Не удалось распознать формат скопированного текста. Убедитесь, что колонки разделены табуляцией или точкой с запятой.")
             
-            mapping = find_column_mapping(df)
-            if mapping:
-                name_c = mapping["name_col"]
-                date_c = mapping["date_col"]
+            if df is not None:
+                mapping = find_column_mapping(df)
+                if mapping:
+                    name_c = mapping["name_col"]
+                    date_c = mapping["date_col"]
                 used_cols = {name_c, date_c}
                 
                 in_c = mapping["in_col"]
@@ -1287,7 +1375,7 @@ with tab_time_calc:
                 key="search_query_input_main"
             )
 
-    if "processed_df" in st.session_state and uploaded_file is not None:
+    if "processed_df" in st.session_state and has_data:
         
         display_df = st.session_state["processed_df"]
         if not show_all:
@@ -1308,7 +1396,7 @@ with tab_time_calc:
         # Подсветка строк: выходные — бирюзовым, рабочий день с нулями — красным
         # + красная рамка в ячейке Aeg väljas если > 1 часа
         def highlight_weekends(df):
-            styles = pd.DataFrame('background-color: #181818; color: #ffffff;', index=df.index, columns=df.columns)
+            styles = pd.DataFrame('background-color: #000000; color: #ffffff;', index=df.index, columns=df.columns)
             for i in df.index:
                 try:
                     date_val = pd.to_datetime(df.at[i, "Kuupäev"], format='%d.%m.%Y')
@@ -1324,7 +1412,7 @@ with tab_time_calc:
                         styles.loc[i] = 'background-color: #004e64; color: #ffffff; font-weight: 600;'
                     elif not is_weekend and is_zero:
                         for col in ["Aeg kokku tehases", "Aeg tehases", "Aeg väljas"]:
-                            styles.at[i, col] = 'background-color: #181818; color: #ff6b6b; font-weight: 600;'
+                            styles.at[i, col] = 'background-color: #000000; color: #ff6b6b; font-weight: 600;'
 
                     try:
                         väljas_str = df.at[i, "Aeg väljas"]
@@ -1348,8 +1436,8 @@ with tab_time_calc:
         }).hide(axis='index')
         st.dataframe(styled_df, use_container_width=False, height=1123)
     else:
-        st.info("Пожалуйста, загрузите и обработайте файл логов в левой панели." if lang == "RU" else 
-                ("Palun laadige ja töötlege logifail vasakult paneelilt." if lang == "EE" else 
-                 "Please upload and process the log file in the left panel."))
+        st.info("Пожалуйста, загрузите файл или вставьте текст и обработайте его в левой панели." if lang == "RU" else 
+                ("Palun laadige fail või asetage tekst ja töötlege seda vasakult paneelilt." if lang == "EE" else 
+                 "Please upload a file or paste text and process it in the left panel."))
 
 st.stop()
