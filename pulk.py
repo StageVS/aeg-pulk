@@ -488,7 +488,7 @@ div.stButton > button, .stDownloadButton > button, [data-testid="stFileUploader"
     background-size: cover !important;
     background-position: center !important;
     background-attachment: fixed !important;
-    color: #b2f0ef !important;
+    color: #ffffff !important;
 }
 
 /* Стилизация боковой панели (сайдбара) */
@@ -497,7 +497,7 @@ div.stButton > button, .stDownloadButton > button, [data-testid="stFileUploader"
     border-right: 1px solid rgba(0, 212, 204, 0.25) !important;
 }
 [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p, [data-testid="stSidebar"] label {
-    color: #b2f0ef !important;
+    color: #ffffff !important;
 }
 
 /* Формы */
@@ -791,7 +791,7 @@ div[data-testid="stCheckbox"] [role="checkbox"][aria-checked="true"] {
 /* Свечение текста подписи чекбокса */
 div[data-testid="stCheckbox"] label p, 
 div[data-testid="stCheckbox"] label span {
-    color: #b2f0ef !important;
+    color: #ffffff !important;
     font-weight: 500 !important;
     text-shadow: 0 0 6px rgba(0, 212, 204, 0.2) !important;
     transition: all 0.3s ease !important;
@@ -808,7 +808,7 @@ div[data-testid="stAlert"] {
     background-color: rgba(0, 50, 60, 0.7) !important;
     border: 1px solid rgba(0, 212, 204, 0.35) !important;
     border-radius: 6px !important;
-    color: #b2f0ef !important;
+    color: #ffffff !important;
 }
 
 /* Поле поиска: светящееся прямоугольное поле с иконкой лупы */
@@ -916,7 +916,7 @@ div[data-testid="stAlert"] {
     height: 12px !important;
 }
 .gdg-search-status {
-    color: #b2f0ef !important;
+    color: #ffffff !important;
     font-weight: 500 !important;
     font-size: 11px !important;
     margin: 0 4px !important;
