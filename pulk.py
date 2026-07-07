@@ -13,6 +13,55 @@ from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 # Настройка страницы
 st.set_page_config(layout="wide", page_title="Ajaarvestus / Расчёт времени / Time Tracking")
 
+def check_password():
+    """Returns True if the user had the correct password."""
+    # По умолчанию пароль "harmet", но его можно настроить в секретах Streamlit Cloud или изменить тут
+    correct_password = "harmet"
+    if "password" in st.secrets:
+        correct_password = st.secrets["password"]
+    
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password_input"] == correct_password:
+            st.session_state["password_correct"] = True
+            del st.session_state["password_input"]  # Удаляем пароль из состояния
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # Первое отображение формы
+        st.markdown("<h2 style='text-align: center; margin-top: 100px;'>🔒 Доступ ограничен / Juurdepääs piiratud</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #888;'>Введите пароль для доступа к системе / Sisestage parool</p>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1.5, 1])
+        with col2:
+            st.text_input(
+                "Пароль / Parool:",
+                type="password",
+                on_change=password_entered,
+                key="password_input"
+            )
+        return False
+    elif not st.session_state["password_correct"]:
+        # Неверный пароль
+        st.markdown("<h2 style='text-align: center; margin-top: 100px;'>🔒 Доступ ограничен / Juurdepääs piiratud</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #888;'>Введите пароль для доступа к системе / Sisestage parool</p>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1.5, 1])
+        with col2:
+            st.text_input(
+                "Пароль / Parool:",
+                type="password",
+                on_change=password_entered,
+                key="password_input"
+            )
+            st.error("😕 Неверный пароль / Vale parool. Попробуйте еще раз.")
+        return False
+    else:
+        # Пароль верный
+        return True
+
+if not check_password():
+    st.stop()
+
 DB_NAME = "production.db"
 
 # ==================== УТИЛИТЫ ДЛЯ РАСЧЕТА ВРЕМЕНИ ====================
