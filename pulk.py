@@ -688,7 +688,14 @@ h1 {
     text-shadow: 0 0 14px rgba(0, 240, 255, 0.4) !important;
     margin-bottom: 24px !important;
 }
-h2, h3 {
+h2 {
+    font-family: 'Nunito', 'Inter', sans-serif !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    text-shadow: 0 0 10px rgba(0, 212, 204, 0.25) !important;
+}
+h3 {
     font-family: 'Nunito', 'Inter', sans-serif !important;
     color: #00D4CC !important;
     font-weight: 700 !important;
