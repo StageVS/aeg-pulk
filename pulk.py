@@ -1375,16 +1375,18 @@ with tab_time_calc:
                 del st.session_state["processed_df"]
         has_data = True
 
-    if has_data:
-        if True:
-            with st.sidebar:
-                # Динамическое название кнопки
-                if input_method == t["input_text_tab"]:
-                    btn_label = "Загрузить" if lang == "RU" else ("Laadi" if lang == "EE" else "Load")
-                else:
-                    btn_label = t["btn_process_log"]
-                    
-                if st.button(btn_label, type="primary"):
+    if "processed_df" not in st.session_state:
+        with st.sidebar:
+            # Динамическое название кнопки
+            if input_method == t["input_text_tab"]:
+                btn_label = "Загрузить" if lang == "RU" else ("Laadi" if lang == "EE" else "Load")
+            else:
+                btn_label = t["btn_process_log"]
+                
+            if st.button(btn_label, type="primary", use_container_width=True):
+                if not has_data:
+                    st.sidebar.error(t["err_upload_file"])
+                    st.stop()
                     try:
                         # 1. Читаем/парсим данные в зависимости от метода ввода
                         if uploaded_file is not None:
