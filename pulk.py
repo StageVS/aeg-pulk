@@ -1615,9 +1615,7 @@ with tab_time_calc:
                         väljas_str = df.at[i, "Aeg väljas"]
                         h, m = map(int, väljas_str.split(':'))
                         if h * 60 + m > 60:
-                            prev = styles.at[i, "Aeg väljas"]
-                            border = 'outline: 2px solid #ffffff; outline-offset: -2px; font-weight: 700; color: #ffffff;'
-                            styles.at[i, "Aeg väljas"] = (prev + '; ' + border) if prev else border
+                            styles.at[i, "Aeg väljas"] = 'background-color: #b32424; color: #ffffff; font-weight: bold;'
                     except:
                         pass
 
