@@ -1083,6 +1083,12 @@ div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] labe
     background-color: rgba(0, 212, 204, 0.1) !important;
 }
 
+/* Уменьшаем верхний отступ сайдбара, чтобы минимизировать зазор между переключателем языка и основным контентом */
+[data-testid="stSidebarUserContent"], 
+section[data-testid="stSidebar"] div.stSidebarUserContent {
+    padding-top: 3rem !important;
+}
+
 /* Настройка подсветки поиска в таблице: делаем совпадения светящимися бирюзовыми/белыми */
 *, *::before, *::after, :root, body, canvas, .glideDataGrid, [role="grid"], [data-testid="stDataFrame"] {
     --gdg-bg-search-result: #00f0ff66 !important;
