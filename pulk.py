@@ -534,10 +534,7 @@ LANGUAGES = {
 }
 
 # --- ИНИЦИАЛИЗАЦИЯ ЯЗЫКА ---
-if "app_lang" not in st.session_state:
-    st.session_state["app_lang"] = "RU"
-
-lang = st.session_state["app_lang"]
+lang = "RU"
 t = LANGUAGES[lang]
 
 # ==================== MODERN TEAL / CYAN THEME ====================
@@ -1025,68 +1022,10 @@ header[data-testid="stHeader"]::before {
     display: none !important;
 }
 
-/* Делаем выбор языка в боковой панели горизонтальным кнопочным сегментом */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] {
-    position: absolute !important;
-    top: 6px !important;
-    left: 12px !important;
-    width: 140px !important;
-    z-index: 99999 !important;
-}
-
-/* Скрываем стандартные круглые радио-точки и заголовок */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [data-testid="stWidgetLabel"] {
-    display: none !important;
-}
-
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 4px !important;
-    background-color: rgba(0, 30, 40, 0.4) !important;
-    border: 1px solid rgba(0, 212, 204, 0.2) !important;
-    border-radius: 6px !important;
-    padding: 2px !important;
-}
-
-/* Стилизуем элементы выбора как кнопки */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label {
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    color: rgba(178, 240, 239, 0.4) !important;
-    background-color: transparent !important;
-    transition: all 0.2s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
-}
-
-/* Убираем отображение самого круглого инпута */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label div:first-child {
-    display: none !important;
-}
-
-/* Стиль для выбранного элемента */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) {
-    background: linear-gradient(135deg, #00c9c8 0%, #007d9c 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 8px rgba(0, 201, 200, 0.3) !important;
-}
-
-/* Эффект наведения на невыбранные кнопки */
-div[data-testid="stSidebar"] div[data-testid="stRadio"] [role="radiogroup"] label:hover {
-    color: #00F0FF !important;
-    background-color: rgba(0, 212, 204, 0.1) !important;
-}
-
-/* Уменьшаем верхний отступ сайдбара, чтобы минимизировать зазор между переключателем языка и основным контентом */
+/* Устанавливаем аккуратный отступ сверху для сайдбара */
 [data-testid="stSidebarUserContent"], 
 section[data-testid="stSidebar"] div.stSidebarUserContent {
-    padding-top: 3rem !important;
+    padding-top: 1.5rem !important;
 }
 
 /* Настройка подсветки поиска в таблице: делаем совпадения светящимися бирюзовыми/белыми */
@@ -1100,21 +1039,8 @@ section[data-testid="stSidebar"] div.stSidebarUserContent {
 # ======================================================================
 
 
-# --- БОКОВАЯ ПАНЕЛЬ И ВЫБОР ЯЗЫКА ---
-with st.sidebar:
-    def change_lang():
-        st.session_state["app_lang"] = st.session_state["lang_selector"]
-
-    selected_lang = st.radio(
-        "Language / Keel / Язык", 
-        ["RU", "EE", "EN"], 
-        index=["RU", "EE", "EN"].index(st.session_state["app_lang"]), 
-        key="lang_selector",
-        horizontal=True,
-        label_visibility="collapsed",
-        on_change=change_lang
-    )
-    st.markdown("---")
+# --- БОКОВАЯ ПАНЕЛЬ ---
+# Выбор языков отключен по запросу пользователя. Приложение работает на русском языке.
 
 # --- ШАПКА ГЛАВНОЙ СТРАНИЦЫ (УБРАНА ПО ЗАПРОСУ) ---
 
