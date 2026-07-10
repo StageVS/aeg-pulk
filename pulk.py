@@ -21,6 +21,11 @@ st.markdown("""
     footer {visibility: hidden;}
     div[data-testid="stHeader"] {visibility: hidden;}
     div[data-testid="stToolbar"] {visibility: hidden;}
+    
+    /* Скрытие плавающей плашки Streamlit/GitHub в правом нижнем углу */
+    div[class^="viewerBadge"] {display: none !important;}
+    a[class^="viewerBadge"] {display: none !important;}
+    span[class^="viewerBadge"] {display: none !important;}
     </style>
 """, unsafe_allow_html=True)
 
