@@ -1383,10 +1383,7 @@ with tab_time_calc:
             else:
                 btn_label = t["btn_process_log"]
                 
-            if st.button(btn_label, type="primary", use_container_width=True):
-                if not has_data:
-                    st.sidebar.error(t["err_upload_file"])
-                    st.stop()
+            if st.button(btn_label, type="primary", use_container_width=True) and (has_data or (st.sidebar.error(t["err_upload_file"]) or st.stop() or False)):
                     try:
                         # 1. Читаем/парсим данные в зависимости от метода ввода
                         if uploaded_file is not None:
