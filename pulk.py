@@ -13,6 +13,18 @@ from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 # Настройка страницы
 st.set_page_config(layout="wide", page_title="Ajaarvestus / Расчёт времени / Time Tracking")
 
+# Скрытие меню настроек, заголовка и футера для блокировки выбора темы
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    div[data-testid="stHeader"] {visibility: hidden;}
+    div[data-testid="stToolbar"] {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
+
 def check_password():
     """Returns True if the user had the correct password."""
     # По умолчанию пароль "harmet", но его можно настроить в секретах Streamlit Cloud или изменить тут
