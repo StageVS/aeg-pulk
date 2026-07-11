@@ -40,10 +40,9 @@ st.markdown("""
 
 def check_password():
     """Returns True if the user had the correct password."""
-    # По умолчанию пароль "harmet", но его можно настроить в секретах Streamlit Cloud или изменить тут
-    correct_password = "harmet"
-    if "password" in st.secrets:
-        correct_password = st.secrets["password"]
+    # По умолчанию пароль "admin" (для локального запуска).
+    # Для безопасности в облаке настройте пароль через Secrets в панели Streamlit Cloud (ключ: password).
+    correct_password = st.secrets.get("password", "admin")
     
     def password_entered():
         """Checks whether a password entered by the user is correct."""
