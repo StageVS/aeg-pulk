@@ -39,6 +39,11 @@ st.markdown("""
     [data-testid="stSidebarResizer"] {
         display: none !important;
     }
+    
+    /* Скрытие кнопки сворачивания сайдбара */
+    [data-testid="stSidebarCollapseButton"] {
+        display: none !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
