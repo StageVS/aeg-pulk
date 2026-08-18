@@ -34,6 +34,11 @@ st.markdown("""
     a[class*="viewerBadge"] {display: none !important;}
     span[class*="viewerBadge"] {display: none !important;}
     div[class*="styles_viewerBadge"] {display: none !important;}
+    
+    /* Отключение возможности изменять ширину сайдбара */
+    [data-testid="stSidebarResizer"] {
+        display: none !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
