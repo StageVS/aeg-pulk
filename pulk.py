@@ -1216,8 +1216,9 @@ search_query = ""
 
 with tab_time_calc:
     st.header(t["time_calc_header"])
+    left_col, right_col = st.columns([3, 7])
     
-    with st.container():
+    with left_col:
         # Селектор метода ввода
         input_method = st.radio(
             "Input Method",
@@ -1271,7 +1272,7 @@ with tab_time_calc:
         has_data = True
 
     if "processed_df" not in st.session_state:
-        with st.container():
+        with left_col:
             # Динамическое название кнопки
             if input_method == t["input_text_tab"]:
                 btn_label = "Загрузить" if lang == "RU" else ("Laadi" if lang == "EE" else "Load")
@@ -1441,7 +1442,7 @@ with tab_time_calc:
                         st.error(f"Произошла ошибка при обработке данных: {e}")
 
     if "processed_df" in st.session_state:
-        with st.container():
+        with left_col:
             # Фильтры
             show_all = st.checkbox(t["hide_zero_days"], value=False, key="show_all_checkbox")
             
@@ -1466,67 +1467,68 @@ with tab_time_calc:
                 st.session_state["log_text_area_val"] = ""
                 st.rerun()
 
-    if "processed_df" in st.session_state:
-        
-        display_df = st.session_state["processed_df"]
-        if not show_all:
-            display_df = display_df[
-                (display_df["Aeg kokku tehases"] != "00:00") | 
-                (display_df["Aeg väljas"] != "00:00") | 
-                (display_df["Aeg tehases"] != "00:00")
-            ]
+    with right_col:
+        if "processed_df" in st.session_state:
             
-        if search_query:
-            # Фильтрация по ключевым словам по всем колонкам (без учета регистра)
-            keywords = search_query.lower().split()
-            mask = display_df.apply(lambda row: all(any(kw in str(val).lower() for val in row) for kw in keywords), axis=1)
-            display_df = display_df[mask]
-
-        st.subheader(t["results_title"])
-
-        # Подсветка строк: выходные — бирюзовым, рабочий день с нулями — красным
-        # + красная рамка в ячейке Aeg väljas если > 1 часа
-        def highlight_weekends(df):
-            styles = pd.DataFrame('background-color: #000000; color: #ffffff;', index=df.index, columns=df.columns)
-            for i in df.index:
-                try:
-                    date_val = pd.to_datetime(df.at[i, "Kuupäev"], format='%d.%m.%Y')
-                    is_weekend = date_val.weekday() >= 5  # 5=сб, 6=вс
-                    is_zero = (
-                        df.at[i, "Aeg kokku tehases"] == "00:00" and
-                        df.at[i, "Aeg tehases"] == "00:00" and
-                        df.at[i, "Aeg väljas"] == "00:00"
-                    )
-                    if is_weekend and is_zero:
-                        styles.loc[i] = 'background-color: #003c50; color: #00f0ff; font-weight: 500;'
-                    elif is_weekend and not is_zero:
-                        styles.loc[i] = 'background-color: #004e64; color: #ffffff; font-weight: 600;'
-                    elif not is_weekend and is_zero:
-                        for col in ["Aeg kokku tehases", "Aeg tehases", "Aeg väljas"]:
-                            styles.at[i, col] = 'background-color: #000000; color: #ff6b6b; font-weight: 600;'
-
+            display_df = st.session_state["processed_df"]
+            if not show_all:
+                display_df = display_df[
+                    (display_df["Aeg kokku tehases"] != "00:00") | 
+                    (display_df["Aeg väljas"] != "00:00") | 
+                    (display_df["Aeg tehases"] != "00:00")
+                ]
+                
+            if search_query:
+                # Фильтрация по ключевым словам по всем колонкам (без учета регистра)
+                keywords = search_query.lower().split()
+                mask = display_df.apply(lambda row: all(any(kw in str(val).lower() for val in row) for kw in keywords), axis=1)
+                display_df = display_df[mask]
+    
+            st.subheader(t["results_title"])
+    
+            # Подсветка строк: выходные — бирюзовым, рабочий день с нулями — красным
+            # + красная рамка в ячейке Aeg väljas если > 1 часа
+            def highlight_weekends(df):
+                styles = pd.DataFrame('background-color: #000000; color: #ffffff;', index=df.index, columns=df.columns)
+                for i in df.index:
                     try:
-                        väljas_str = df.at[i, "Aeg väljas"]
-                        h, m = map(int, väljas_str.split(':'))
-                        if h * 60 + m > 60:
-                            styles.at[i, "Aeg väljas"] = 'background-color: #b32424; color: #ffffff; font-weight: bold;'
+                        date_val = pd.to_datetime(df.at[i, "Kuupäev"], format='%d.%m.%Y')
+                        is_weekend = date_val.weekday() >= 5  # 5=сб, 6=вс
+                        is_zero = (
+                            df.at[i, "Aeg kokku tehases"] == "00:00" and
+                            df.at[i, "Aeg tehases"] == "00:00" and
+                            df.at[i, "Aeg väljas"] == "00:00"
+                        )
+                        if is_weekend and is_zero:
+                            styles.loc[i] = 'background-color: #003c50; color: #00f0ff; font-weight: 500;'
+                        elif is_weekend and not is_zero:
+                            styles.loc[i] = 'background-color: #004e64; color: #ffffff; font-weight: 600;'
+                        elif not is_weekend and is_zero:
+                            for col in ["Aeg kokku tehases", "Aeg tehases", "Aeg väljas"]:
+                                styles.at[i, col] = 'background-color: #000000; color: #ff6b6b; font-weight: 600;'
+    
+                        try:
+                            väljas_str = df.at[i, "Aeg väljas"]
+                            h, m = map(int, väljas_str.split(':'))
+                            if h * 60 + m > 60:
+                                styles.at[i, "Aeg väljas"] = 'background-color: #b32424; color: #ffffff; font-weight: bold;'
+                        except:
+                            pass
+    
                     except:
                         pass
-
-                except:
-                    pass
-
-
-
-            return styles
-
-        styled_df = display_df.style.apply(highlight_weekends, axis=None).set_properties(**{
-            'font-size': '25px'
-        }).hide(axis='index')
-        st.dataframe(styled_df, use_container_width=False, height=1123)
-    else:
-        st.info("Пожалуйста, загрузите файл или вставьте текст и обработайте его в левой панели." if lang == "RU" else 
-                ("Palun laadige fail või asetage tekst ja töötlege seda vasakult paneelilt." if lang == "EE" else 
-                 "Please upload a file or paste text and process it in the left panel."))
-
+    
+    
+    
+                return styles
+    
+            styled_df = display_df.style.apply(highlight_weekends, axis=None).set_properties(**{
+                'font-size': '25px'
+            }).hide(axis='index')
+            st.dataframe(styled_df, use_container_width=False, height=1123)
+        else:
+            st.info("Пожалуйста, загрузите файл или вставьте текст и обработайте его в левой панели." if lang == "RU" else 
+                    ("Palun laadige fail või asetage tekst ja töötlege seda vasakult paneelilt." if lang == "EE" else 
+                     "Please upload a file or paste text and process it in the left panel."))
+    
 st.stop()
