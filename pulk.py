@@ -896,10 +896,18 @@ div[data-testid="stCheckbox"]:hover label span {
 
 /* Success / Info сообщения */
 div[data-testid="stAlert"] {
-    background-color: rgba(0, 50, 60, 0.7) !important;
-    border: 1px solid rgba(0, 212, 204, 0.35) !important;
-    border-radius: 6px !important;
-    color: #000000 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 250, 255, 0.95)) !important;
+    border: 2px solid #00D4CC !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 212, 204, 0.45), 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    color: #111111 !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+div[data-testid="stAlert"] * {
+    color: #111111 !important;
+    font-weight: 600 !important;
+    text-shadow: 0px 1px 2px rgba(255,255,255,0.8) !important;
 }
 
 /* Поле поиска: светящееся прямоугольное поле с иконкой лупы */
