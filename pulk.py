@@ -16,6 +16,13 @@ st.set_page_config(layout="wide", page_title="Ajaarvestus / Расчёт вре�
 # Скрытие меню настроек, заголовка и футера для блокировки выбора темы
 st.markdown("""
     <style>
+    /* Черная рамка вокруг таблицы */
+    [data-testid="stDataFrame"] > div:nth-of-type(1) {
+        border: 4px solid #111111 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
     /* Fix UI text colors for light background */
     [data-testid="stRadio"] p, [data-testid="stRadio"] span, [data-testid="stRadio"] label, 
     [data-testid="stCheckbox"] p, [data-testid="stCheckbox"] span, [data-testid="stCheckbox"] label,
@@ -521,6 +528,13 @@ t = LANGUAGES[lang]
 # ==================== MODERN TEAL / CYAN THEME ====================
 st.markdown("""
 <style>
+    /* Черная рамка вокруг таблицы */
+    [data-testid="stDataFrame"] > div:nth-of-type(1) {
+        border: 4px solid #111111 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
     /* Fix UI text colors for light background */
     [data-testid="stRadio"] p, [data-testid="stRadio"] span, [data-testid="stRadio"] label, 
     [data-testid="stCheckbox"] p, [data-testid="stCheckbox"] span, [data-testid="stCheckbox"] label,
@@ -1561,7 +1575,7 @@ with tab_time_calc:
             styled_df = display_df.style.apply(highlight_weekends, axis=None).set_properties(**{
                 'font-size': '25px'
             }).hide(axis='index')
-            st.dataframe(styled_df, use_container_width=False, height=1123)
+            st.dataframe(styled_df, use_container_width=True, height=1123, hide_index=True)
         else:
             st.info("Пожалуйста, загрузите файл или вставьте текст и обработайте его в левой панели." if lang == "RU" else 
                     ("Palun laadige fail või asetage tekst ja töötlege seda vasakult paneelilt." if lang == "EE" else 
