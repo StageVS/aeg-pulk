@@ -1217,7 +1217,7 @@ search_query = ""
 with tab_time_calc:
     st.header(t["time_calc_header"])
     
-    with st.sidebar:
+    with st.container():
         # Селектор метода ввода
         input_method = st.radio(
             "Input Method",
@@ -1271,14 +1271,14 @@ with tab_time_calc:
         has_data = True
 
     if "processed_df" not in st.session_state:
-        with st.sidebar:
+        with st.container():
             # Динамическое название кнопки
             if input_method == t["input_text_tab"]:
                 btn_label = "Загрузить" if lang == "RU" else ("Laadi" if lang == "EE" else "Load")
             else:
                 btn_label = t["btn_process_log"]
                 
-            if st.button(btn_label, type="primary", use_container_width=True) and (has_data or (st.sidebar.error(t["err_upload_file"]) or st.stop() or False)):
+            if st.button(btn_label, type="primary", use_container_width=True) and (has_data or (st.error(t["err_upload_file"]) or st.stop() or False)):
                     try:
                         # 1. Читаем/парсим данные в зависимости от метода ввода
                         if uploaded_file is not None:
@@ -1286,11 +1286,11 @@ with tab_time_calc:
                         else:
                             df = parse_pasted_text(pasted_text)
                             if df is None:
-                                st.sidebar.error("Не удалось распознать формат скопированного текста. Убедитесь, что колонки разделены табуляцией или точкой с запятой.")
+                                st.error("Не удалось распознать формат скопированного текста. Убедитесь, что колонки разделены табуляцией или точкой с запятой.")
                                 st.stop()
                                 
                         if df is None:
-                            st.sidebar.error("Данные отсутствуют!")
+                            st.error("Данные отсутствуют!")
                             st.stop()
                             
                         # 2. Определяем маппинг колонок
@@ -1392,7 +1392,7 @@ with tab_time_calc:
                                 continue
                                 
                         if not extracted_rows:
-                            st.sidebar.error("Не удалось извлечь данные из файла. Проверьте формат.")
+                            st.error("Не удалось извлечь данные из файла. Проверьте формат.")
                         else:
                             df_ext = pd.DataFrame(extracted_rows)
                             df_grouped = df_ext.groupby(["Clean_Name", "Date_Str"]).agg({
@@ -1438,10 +1438,10 @@ with tab_time_calc:
                             st.session_state["log_text_area_val"] = ""
                             st.rerun()
                     except Exception as e:
-                        st.sidebar.error(f"Произошла ошибка при обработке данных: {e}")
+                        st.error(f"Произошла ошибка при обработке данных: {e}")
 
     if "processed_df" in st.session_state:
-        with st.sidebar:
+        with st.container():
             # Фильтры
             show_all = st.checkbox(t["hide_zero_days"], value=False, key="show_all_checkbox")
             
