@@ -1152,16 +1152,6 @@ def parse_pasted_text(text_data):
     # 1. Сначала пробуем стандартное чтение таблицы (TSV/CSV)
     try:
         df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
-# Helper to parse pasted text
-def parse_pasted_text(text_data):
-    if not text_data.strip():
-        return None
-    import io
-    import re
-    
-    # 1. Сначала пробуем стандартное чтение таблицы (TSV/CSV)
-    try:
-        df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
         if df.shape[1] >= 2:
             # Проверяем, есть ли хотя бы в одном столбце даты в формате DD.MM.YYYY
             has_date = False
