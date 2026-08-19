@@ -1152,6 +1152,16 @@ def parse_pasted_text(text_data):
     # 1. Сначала пробуем стандартное чтение таблицы (TSV/CSV)
     try:
         df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
+# Helper to parse pasted text
+def parse_pasted_text(text_data):
+    if not text_data.strip():
+        return None
+    import io
+    import re
+    
+    # 1. Сначала пробуем стандартное чтение таблицы (TSV/CSV)
+    try:
+        df = pd.read_csv(io.StringIO(text_data), sep='\t', header=None)
         if df.shape[1] >= 2:
             # Проверяем, есть ли хотя бы в одном столбце даты в формате DD.MM.YYYY
             has_date = False
@@ -1167,10 +1177,9 @@ def parse_pasted_text(text_data):
     # 2. Если табличный парсинг не дал дат, делаем интеллектуальный построчный разбор
     lines = [line.strip() for line in text_data.split('\n') if line.strip()]
     records = []
-    
+
     # Регулярное выражение для поиска дат DD.MM.YYYY
     date_regex = re.compile(r'\b(\d{2}\.\d{2}\.\d{4})\b')
-    
     for idx, line in enumerate(lines):
         match = date_regex.search(line)
         if match:
@@ -1275,7 +1284,8 @@ with tab_time_calc:
             [t["input_file_tab"], t["input_text_tab"]],
             horizontal=True,
             key="input_method_selector",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            index=1
         )
         
         if input_method == t["input_file_tab"]:
