@@ -1575,7 +1575,7 @@ with tab_time_calc:
             styled_df = display_df.style.apply(highlight_weekends, axis=None).set_properties(**{
                 'font-size': '25px'
             }).hide(axis='index')
-            st.dataframe(styled_df, use_container_width=True, height=1123, hide_index=True)
+            st.dataframe(styled_df, use_container_width=False, height=1123, hide_index=True)
         else:
             st.info("Пожалуйста, загрузите файл или вставьте текст и обработайте его в левой панели." if lang == "RU" else 
                     ("Palun laadige fail või asetage tekst ja töötlege seda vasakult paneelilt." if lang == "EE" else 
