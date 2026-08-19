@@ -1282,25 +1282,25 @@ with tab_time_calc:
             uploaded_file = st.file_uploader("Upload Log File", type=["xlsx", "xls"], label_visibility="collapsed", key="log_file_uploader")
             pasted_text = None
         else:
-            if "log_text_area_val" not in st.session_state:
-                st.session_state["log_text_area_val"] = ""
+            if "clear_counter" not in st.session_state:
+                st.session_state["clear_counter"] = 0
                 
             pasted_text = st.text_area(
                 "Paste Text",
-                value=st.session_state["log_text_area_val"],
+                value="",
                 placeholder=t["placeholder_paste_text"],
                 label_visibility="collapsed",
                 height=250,
-                key="log_text_area"
+                key=f"log_text_area_{st.session_state['clear_counter']}"
             )
             st.session_state["log_text_area_val"] = pasted_text
             uploaded_file = None
             if pasted_text and pasted_text.strip():
                 if st.button("🗑️ Очистить текст" if lang == "RU" else ("🗑️ Puhasta tekst" if lang == "EE" else "🗑️ Clear Text"), use_container_width=True):
                     st.session_state["log_text_area_val"] = ""
-                    if "log_text_area" in st.session_state:
-                        del st.session_state["log_text_area"]
+                    st.session_state["clear_counter"] += 1
                     st.rerun()
+
             
     df = None
     has_data = False
@@ -1512,10 +1512,10 @@ with tab_time_calc:
                     del st.session_state["last_file_key"]
                 if "log_file_uploader" in st.session_state:
                     del st.session_state["log_file_uploader"]
-                if "log_text_area" in st.session_state:
-                    del st.session_state["log_text_area"]
-                st.session_state["log_text_area_val"] = ""
+                if "clear_counter" in st.session_state:
+                    st.session_state["clear_counter"] += 1
                 st.rerun()
+
 
     with right_col:
         if "processed_df" in st.session_state:
