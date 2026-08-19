@@ -16,6 +16,24 @@ st.set_page_config(layout="wide", page_title="Ajaarvestus / Расчёт вре�
 # Скрытие меню настроек, заголовка и футера для блокировки выбора темы
 st.markdown("""
     <style>
+    /* Fix UI text colors for light background */
+    [data-testid="stRadio"] p, [data-testid="stRadio"] span, [data-testid="stRadio"] label, 
+    [data-testid="stCheckbox"] p, [data-testid="stCheckbox"] span, [data-testid="stCheckbox"] label,
+    [data-testid="stTextInput"] p, [data-testid="stTextInput"] span, [data-testid="stTextInput"] label,
+    [data-testid="stFileUploader"] p, [data-testid="stFileUploader"] span, [data-testid="stFileUploader"] label,
+    [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] span {
+        color: #111111 !important;
+    }
+    
+    input {
+        color: #111111 !important;
+        background-color: #ffffff !important;
+    }
+    
+    input::placeholder {
+        color: #666666 !important;
+    }
+
     #MainMenu {visibility: hidden; display: none !important;}
     header {visibility: hidden; display: none !important;}
     footer {visibility: hidden; display: none !important;}
@@ -503,6 +521,24 @@ t = LANGUAGES[lang]
 # ==================== MODERN TEAL / CYAN THEME ====================
 st.markdown("""
 <style>
+    /* Fix UI text colors for light background */
+    [data-testid="stRadio"] p, [data-testid="stRadio"] span, [data-testid="stRadio"] label, 
+    [data-testid="stCheckbox"] p, [data-testid="stCheckbox"] span, [data-testid="stCheckbox"] label,
+    [data-testid="stTextInput"] p, [data-testid="stTextInput"] span, [data-testid="stTextInput"] label,
+    [data-testid="stFileUploader"] p, [data-testid="stFileUploader"] span, [data-testid="stFileUploader"] label,
+    [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] span {
+        color: #111111 !important;
+    }
+    
+    input {
+        color: #111111 !important;
+        background-color: #ffffff !important;
+    }
+    
+    input::placeholder {
+        color: #666666 !important;
+    }
+
 /* Подключаем Inter для текста и Nunito для заголовков (округлые буквы) */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
 
@@ -1216,7 +1252,7 @@ search_query = ""
 
 with tab_time_calc:
     st.header(t["time_calc_header"])
-    left_col, right_col = st.columns([3, 7])
+    left_col, right_col = st.columns([2, 8])
     
     with left_col:
         # Селектор метода ввода
